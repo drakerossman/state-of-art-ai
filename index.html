@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>State of Art AI</title>
+    <link rel="icon" type="image/png" href="https://twemoji.maxcdn.com/v/latest/72x72/1f9e9.png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #36393f;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main {
+            padding-left: 300px;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 240px;
+            height: 100%;
+            background-color: #2f3136;
+            padding: 20px;
+            box-shadow: 2px 0 4px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: grid;
+            grid-template-rows: 1fr auto;
+        }
+
+
+        .social-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 20px;
+            justify-content: center;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .social-link {
+            font-size: 24px;
+        }
+
+
+        .sidebar-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #ffffff;
+            border-bottom: 2px solid #ffffff;
+            padding-bottom: 10px;
+            padding-left: 10px;
+        }
+
+        .sidebar-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-list li {
+            font-size: 16px;
+            margin-bottom: 15px;
+            padding: 5px 10px;
+            border-radius: 3px;
+        }
+
+        .sidebar-list a {
+            color: #ffffff;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .sidebar-list li:hover {
+            background-color: #40444b;
+        }
+
+        .sidebar-list li.active {
+            background-color: #40444b;
+        }
+
+        @media screen and (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                padding-left: 0;
+            }
+        }
+
+        .header {
+            position: relative;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-left: 20px;
+        }
+
+        .header-button {
+            border-radius: 3px;
+            background-color: #40444b;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-left: 20px;
+        }
+
+        .header-button:hover {
+            background-color: #50555c;
+        }
+
+        .modal {
+            font-size: 1.2em;
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            backdrop-filter: blur(2px);
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #2f3136;
+            margin: auto;
+            margin-top: 50px;
+            padding: 30px;
+            border-radius: 5px;
+            width: 50%;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .modal-close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .modal-close:hover,
+        .modal-close:focus {
+            color: #ffffff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px;
+            padding-top: 0px;
+        }
+
+        .info-box {
+            /* width: calc(5/7 * 100%); */
+            width: 100%;
+            max-width: 700px;
+            background-color: #2f3136;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: opacity 0.5s, transform 0.5s;
+        }
+
+        img.emoji {
+            height: 1em;
+            width: 1em;
+            margin: 0 .05em 0 .1em;
+            vertical-align: -0.1em;
+        }
+
+        .subscribe-container {
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            padding-bottom: 50px;
+
+        }
+
+        .subscribe-input {
+            background-color: #40444b;
+            color: #ffffff;
+            border: 1px solid #ffffff;
+            padding: 10px;
+            width: 80%;
+            font-size: 16px;
+            border-radius: 3px;
+            margin-bottom: 10px;
+        }
+
+        .subscribe-button {
+            border-radius: 3px;
+            background-color: #40444b;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .subscribe-button:hover {
+            background-color: #50555c;
+        }
+
+        .content-container {
+            display: grid;
+            grid-template-rows: auto 1fr;
+        }
+
+        .floating-action-buttons {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: grid;
+            grid-template-columns: auto auto auto auto;
+            grid-gap: 20px;
+            z-index: 1000;
+        }
+
+        .fab-button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #40444b;
+            color: #ffffff;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            text-decoration: none;
+        }
+
+        .fab-button:hover {
+            background-color: #50555c;
+        }
+
+        .fab-button i {
+            font-size: 20px;
+        }
+
+        .info-box-item a {
+            color: #8cc9ff;
+        }
+
+        .info-box-item a:hover {
+            color: #b3deff;
+        }
+
+        .info-box a:visited {
+            color: #aa88ff;
+        }
+
+        .icon-text a {
+            color: #8cc9ff;
+        }
+
+        .icon-text a:hover {
+            color: #b3deff;
+        }
+
+        .icon-text a:visited {
+            color: #aa88ff;
+        }
+
+        .modal-content a {
+            color: #8cc9ff;
+        }
+
+        .modal-content a:hover {
+            color: #b3deff;
+        }
+
+        .modal-content a:visited {
+            color: #aa88ff;
+        }
+
+        #help-wanted-modal .icon-list {
+            display: grid;
+            grid-template-rows: repeat(3, auto);
+            grid-gap: 0.5rem;
+        }
+
+        .icon-item {
+            display: grid;
+            grid-template-columns: min-content 1fr;
+            align-items: start;
+        }
+
+        .help-wanted-icon {
+            display: inline-block;
+        }
+
+        .icon-text {
+            display: inline;
+            margin-left: 0.5em;
+        }
+
+        .fab.fa-github.help-wanted-icon {
+            color: #d6d6d6;
+        }
+
+        .fab.fa-discord.help-wanted-icon {
+            color: #738ADB;
+        }
+
+        .fab.fa-patreon.help-wanted-icon {
+            color: #F96854;
+        }
+    </style>
+    <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body id="body">
+    <div class="sidebar">
+        <div class="content-container">
+            <h2 class="sidebar-title">Categories</h2>
+            <ul class="sidebar-list">
+            </ul>
+        </div>
+        <form action="" method="post" class="subscribe-container" id="subscribe-form">
+            <p>Subscribe to the AI Newsletter<br> to never miss a piece!</p>
+            <input class="subscribe-input" type="email" name="email" placeholder="you@example.com"></input>
+            <input type="hidden" name="tag" value="stateofartai" />
+            <input class="subscribe-button" type="submit" value="Subscribe"></input>
+        </form>
+    </div>
+
+    <div class="main">
+        <header class="header">
+            <div class="header-content">
+                <h1 class="header-title">State of Art AI 🧩</h1>
+                <button class="header-button" id="about-button">About</button>
+                <button class="header-button" id="help-wanted-button">Help wanted!</button>
+            </div>
+        </header>
+
+        <div class="container">
+        </div>
+    </div>
+    <div class="modal" id="about-modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2>About</h2>
+            <p>
+                This project aims to provide the snapshot of the State of Art models which you can run locally. It also aim to provide extensive model data categorization, filtering and search capabilities.<br><br><br>Right now the website supports basic functionality, but expect
+                more to come soon. Check out the <a
+                    href="https://github.com/users/drakerossman/projects/1/views/1?visibleFields=%5B%22Title%22%2C%22Status%22%2C%22Milestone%22%5D">Roadmap
+                    on
+                    GitHub</a>.
+                <br><br><br>The website is updated daily, so subscribe to never miss a new model!
+            </p>
+        </div>
+    </div>
+    <div class="modal" id="help-wanted-modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2>Help wanted!</h2>
+            <div class="icon-list">
+                <div class="icon-item">
+                    <span class="fab fa-github help-wanted-icon"></span>
+                    <span class="icon-text">All the development is happening on the <a
+                            href="https://github.com/drakerossman/state-of-art-ai">GitHub</a>, so don't hesitate to report an
+                        issue, submit a PR, and don't forget to star the repo!</span>
+                </div>
+                <div class="icon-item">
+                    <span class="fab fa-discord help-wanted-icon"></span>
+                    <span class="icon-text">Join the collaboration on <a
+                            href="https://discord.gg/JqEbUEvwSJ">Discord</a> and help us grow the community. It's nigh
+                        impossible to follow all the updates in AI field as a sole developer, so your help is more then
+                        welcome.</span>
+                </div>
+                <div class="icon-item">
+                    <span class="fab fa-patreon help-wanted-icon"></span>
+                    <span class="icon-text">You can donate via <a href="https://patreon.com/DrakeRossman">Patreon</a>,
+                        or, if you're interested in sponsoring, reach out <a
+                            href="mailto:drake.rossman@protonmail.com">directly over email</a>.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="floating-action-buttons">
+        <a href="https://github.com/drakerossman/state-of-art-ai" class="fab-button" id="github-button"><i
+                class="fab fa-github"></i></a>
+        <a href="https://discord.gg/JqEbUEvwSJ" class="fab-button" id="discord-button"><i
+                class="fab fa-discord"></i></a>
+        <a href="https://twitter.com/drakerossman" class="fab-button" id="twitter-button"><i
+                class="fab fa-twitter"></i></a>
+        <a href="https://mastodon.social/@drakerossman" class="fab-button" id="mastodon-button"><i
+                class="fab fa-mastodon"></i></a>
+    </div>
+
+
+
+    <script>
+        const form = document.getElementById("subscribe-form");
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const email = event.target.email.value;
+            event.target.email.placeholder = email;
+            event.target.email.value = "";
+            await new Promise(resolve => setTimeout(resolve, 0));
+            alert(`\nThank you for subscribing!\n\nPlease check your email to confirm the subscription.`);
+        });
+
+        const categoriesToItems = [{
+                title: "💬 Large Language Models",
+                link: "#llms",
+                items: [{
+                        name: "llama.cpp",
+                        repo: "https://github.com/ggerganov/llama.cpp",
+                        requirements: "3.9 GB RAM, runs on CPU",
+                        creator: "Meta, Georgi Gerganov, et al.",
+                        architecture: "Transformer",
+                        paper: "Attention is All You Need https://arxiv.org/abs/1706.03762",
+                        releaseDate: "March 10th, 2023",
+                        about: "A C++ implementation of various Transformer language models with different quantization, optimized for Apple Silicon and x86 architectures.",
+                        trainingData: "No",
+                        weights: "Yes",
+                        license: "Non-commercial bespoke license; MIT"
+                    },
+                    {
+                        name: "Vicuna",
+                        repo: "https://github.com/ggerganov/llama.cpp",
+                        requirements: "14GB of GPU or 30GB of CPU Memory",
+                        creator: "Students and Advisors from UC Berkeley, CMU, Stanford, and UC San Diego",
+                        architecture: "Transformer",
+                        paper: "Attention is All You Need https://arxiv.org/abs/1706.03762",
+                        releaseDate: "March 19th, 2023",
+                        about: "An open-source chatbot impressing GPT-4 with 90% ChatGPT quality. Vicuna model weights are released as delta weights to comply with the LLaMA model license.",
+                        trainingData: "No",
+                        weights: "Yes",
+                        license: "Non-commercial bespoke license; Apache 2.0"
+                    },
+
+                ],
+            },
+            {
+                title: "🎨 Image Generation",
+                link: "#image-generation",
+                items: [{
+                    name: "Stable Diffusion web UI",
+                    repo: "https://github.com/AUTOMATIC1111/stable-diffusion-webui",
+                    requirements: "8GB VRAM",
+                    creator: "Stability AI, Robin Rombach, Patrick Esser; AUTOMATIC1111",
+                    architecture: "Latent Diffusion",
+                    paper: "https://arxiv.org/abs/2112.10752",
+                    releaseDate: "August 22nd, 2022",
+                    about: "Web UI for Stable Diffusion with extensive list of customizable options and numerous additional features.",
+                    trainingData: "No",
+                    weights: "Yes",
+                    license: "CreativeML Open RAIL++-M License, AGPL v3"
+
+                }, ],
+            },
+            {
+                title: "👀 Object Detection",
+                link: "#object-detection",
+                items: [{
+                    name: "YOLOv8",
+                    repo: "https://github.com/ultralytics/ultralytics",
+                    requirements: "Could be run on edge",
+                    creator: "Ultralytics",
+                    architecture: "YOLO",
+                    paper: "https://arxiv.org/abs/1506.02640",
+                    releaseDate: "January 10th, 2023",
+                    about: "YOLOv8 is designed to be fast, accurate, and easy to use, making it an excellent choice for a wide range of object detection, image segmentation and image classification tasks.",
+                    trainingData: "No",
+                    weights: "Yes",
+                    license: "GPL v3"
+                }, ],
+            },
+            {
+                title: "🗣 Speech Synthesis",
+                link: "#speech-synthesis",
+                items: [{
+                    name: "TorToiSe",
+                    repo: "https://github.com/neonbjb/tortoise-tts",
+                    requirements: "Could be run on edge",
+                    creator: "neonbjb",
+                    architecture: "Tortoise",
+                    paper: "https://nonint.com/2022/04/25/tortoise-architectural-design-doc/",
+                    releaseDate: "January 28th, 2022",
+                    about: "A multi-voice TTS system trained with an emphasis on quality.",
+                    trainingData: "No",
+                    weights: "Yes",
+                    license: "Apache 2.0"
+                }, {
+                    name: "Coqui TTS",
+                    repo: "https://github.com/coqui-ai/TTS",
+                    requirements: "Could be run on edge",
+                    creator: "Coqui AI",
+                    architecture: "YOLO",
+                    paper: "https://arxiv.org/abs/1506.02640",
+                    releaseDate: "January 22nd, 2018",
+                    about: "Deep learning toolkit for Text-to-Speech, battle-tested in research and production.",
+                    trainingData: "No",
+                    weights: "Yes",
+                    license: "MPL 2.0"
+                }, ],
+            },
+            {
+                title: "👂 Speech Recognition",
+                link: "#speech-recognition",
+                items: [{
+                    name: "whisper.cpp",
+                    repo: "https://github.com/ggerganov/whisper.cpp",
+                    requirements: "Could be run on edge",
+                    creator: "OpenAI, Georgi Gerganov",
+                    architecture: "Transformer",
+                    paper: "https://arxiv.org/abs/2212.04356",
+                    releaseDate: "September 25th, 2022",
+                    about: "Port of Whisper - OpenAI's high-performance inference automatic speech recognition model in C/C++.",
+                    trainingData: "No",
+                    weights: "Yes",
+                    license: "MIT"
+                }, ],
+            },
+            {
+                title: "🔎 Character Recognition",
+                link: "#character-recognition",
+                items: [{
+                    name: "PaddleOCR",
+                    repo: "https://github.com/PaddlePaddle/PaddleOCR",
+                    requirements: "Could be run on CPU",
+                    creator: "PaddlePaddle",
+                    architecture: "Various",
+                    paper: "Various",
+                    releaseDate: "May 8th, 2020",
+                    about: "Various multilingual OCR toolkits based on PaddlePaddle - practical ultra lightweight OCR system.",
+                    trainingData: "No",
+                    weights: "Yes",
+                    license: "Apache 2.0"
+                }, ],
+            },
+        ];
+
+
+        const toggleModal = (modalId, action) => {
+            const modal = document.getElementById(modalId);
+            modal.style.display = action === 'open' ? 'block' : 'none';
+        };
+
+        document.getElementById("about-button").addEventListener("click", () => toggleModal("about-modal", 'open'));
+        document.getElementById("help-wanted-button").addEventListener("click", () => toggleModal("help-wanted-modal",
+            'open'));
+
+        document.querySelectorAll(".modal-close").forEach(closeButton => closeButton.addEventListener("click",
+            function () {
+                toggleModal(this.parentElement.parentElement.id, 'close');
+            }));
+
+        document.querySelectorAll(".modal").forEach((modal) =>
+            modal.addEventListener("click", (event) => {
+                if (event.target === modal) {
+                    toggleModal(modal.id, "close");
+                }
+            })
+        );
+
+        const processPaper = (paper) => {
+            const linkRegex = /(https?:\/\/[^\s]+)/g;
+            const matches = paper.match(linkRegex);
+
+            if (matches) {
+                matches.forEach((match) => {
+                    const link = `<a href="${match}" target="_blank">${match}</a>`;
+                    paper = paper.replace(match, link);
+                });
+            }
+
+            return paper;
+        };
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const populateSidebar = () => {
+                const sidebarList = document.querySelector(".sidebar-list");
+                categoriesToItems.forEach(category => {
+                    const listItem = document.createElement("li");
+                    const link = document.createElement("a");
+                    link.setAttribute("href", category.link);
+                    link.textContent = category.title;
+                    link.innerHTML = twemoji.parse(link.innerHTML);
+                    listItem.appendChild(link);
+                    sidebarList.appendChild(listItem);
+                });
+            };
+
+            const headerTitle = document.querySelector(".header-title");
+            headerTitle.innerHTML = twemoji.parse(headerTitle.innerHTML);
+
+            const container = document.querySelector(".container");
+
+            const createBox = (item, category) => {
+                const box = document.createElement("div");
+                box.className = "info-box";
+                box.dataset.category = category;
+                box.innerHTML = `
+                    <h3 class="info-box-title">${item.name}</h3>
+                    <p class="info-box-item"><strong>Repo:</strong> <a href="${item.repo}" target="_blank">${item.repo}</a></p>
+                    <p class="info-box-item"><strong>Requirements:</strong> ${item.requirements}</p>
+                    <p class="info-box-item"><strong>Creator:</strong> ${item.creator}</p>
+                    <p class="info-box-item"><strong>Architecture:</strong> ${item.architecture}</p>
+                    <p class="info-box-item"><strong>Paper:</strong> </strong> <span class="paper-text">${processPaper(item.paper)}</span></p>
+                    <p class="info-box-item"><strong>Release Date:</strong> ${item.releaseDate}</p>
+                    <p class="info-box-item"><strong>About:</strong> ${item.about}</p>
+                    <p class="info-box-item"><strong>Training Data:</strong> ${item.trainingData}</p>
+                    <p class="info-box-item"><strong>Weights:</strong> ${item.weights}</p>
+                    <p class="info-box-item"><strong>License:</strong> ${item.license}</p>
+                `;
+                container.appendChild(box);
+            };
+
+            const populateBoxes = () => {
+                categoriesToItems.forEach(category => {
+                    category.items.forEach(item => createBox(item, category.link.slice(1)));
+                });
+            };
+
+
+            const animateBoxes = () => {
+                const boxes = document.querySelectorAll(".info-box");
+                const windowHeight = window.innerHeight;
+
+                // Filter only visible boxes
+                const visibleBoxes = Array.from(boxes).filter(
+                    (box) => box.style.display !== "none"
+                );
+
+                visibleBoxes.forEach((box, index) => {
+                    setTimeout(() => {
+                        if (box.getBoundingClientRect().top < windowHeight) {
+                            box.style.opacity = "1";
+                            box.style.transform = "translate";
+                            box.style.transform = "translateX(0)";
+                        }
+                    }, 100 * index);
+                });
+            };
+
+            const showCategory = (categoryId) => {
+                const boxes = document.querySelectorAll(".info-box");
+                boxes.forEach(box => {
+                    box.style.display = box.dataset.category === categoryId ? "block" : "none";
+                });
+                animateBoxes();
+            };
+
+            const init = () => {
+                populateSidebar();
+                populateBoxes();
+                animateBoxes();
+                window.addEventListener("scroll", animateBoxes);
+
+                document.querySelectorAll(".sidebar-list a").forEach(link => {
+                    link.addEventListener("click", event => {
+                        event.preventDefault();
+                        const categoryId = event.currentTarget.getAttribute("href").slice(
+                            1);
+
+                        const activeLink = document.querySelector(
+                            ".sidebar-list li.active");
+                        if (activeLink) {
+                            activeLink.classList.remove("active");
+                        }
+
+                        event.currentTarget.parentElement.classList.add("active");
+
+                        showCategory(categoryId);
+                        const boxes = document.querySelectorAll(".info-box");
+                        boxes.forEach(box => {
+                            if (box.dataset.category === categoryId) {
+                                box.style.opacity = "0";
+                                box.style.transform = "translateX(-50px)";
+                            }
+                        });
+                        animateBoxes();
+                    });
+                });
+                document.querySelector(".sidebar-list a[href='#llms']").parentElement.classList.add(
+                    "active");
+                showCategory("llms");
+            };
+
+            init();
+
+        });
+    </script>
+</body>
+
+</html>
