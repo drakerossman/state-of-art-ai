@@ -366,7 +366,9 @@
             <span class="modal-close">&times;</span>
             <h2>About</h2>
             <p>
-                This project aims to provide the snapshot of the State of Art models which you can run locally. It also aim to provide extensive model data categorization, filtering and search capabilities.<br><br><br>Right now the website supports basic functionality, but expect
+                This project aims to provide the snapshot of the State of Art models which you can run locally. It also
+                aims to provide extensive model data categorization, filtering and search capabilities.<br><br><br>Right
+                now the website supports basic functionality, but expect
                 more to come soon. Check out the <a
                     href="https://github.com/users/drakerossman/projects/1/views/1?visibleFields=%5B%22Title%22%2C%22Status%22%2C%22Milestone%22%5D">Roadmap
                     on
@@ -383,7 +385,7 @@
                 <div class="icon-item">
                     <span class="fab fa-github help-wanted-icon"></span>
                     <span class="icon-text">All the development is happening on the <a
-                            href="https://github.com/drakerossman/state-of-art-ai">GitHub</a>, so don't hesitate to report an
+                            href="https://github.com/drakerossman/state-of-art-ai">GitHub</a>, so be sure to report an
                         issue, submit a PR, and don't forget to star the repo!</span>
                 </div>
                 <div class="icon-item">
@@ -414,17 +416,36 @@
                 class="fab fa-mastodon"></i></a>
     </div>
 
-
-
     <script>
         const form = document.getElementById("subscribe-form");
+
         form.addEventListener("submit", async (event) => {
             event.preventDefault();
             const email = event.target.email.value;
+            const tag = event.target.tag.value;
             event.target.email.placeholder = email;
             event.target.email.value = "";
-            await new Promise(resolve => setTimeout(resolve, 0));
-            alert(`\nThank you for subscribing!\n\nPlease check your email to confirm the subscription.`);
+
+            const url = `https://buttondown.email/api/emails/embed-subscribe/drakerossman`;
+            const data = new URLSearchParams();
+            data.append("email", email);
+            data.append("tag", tag);
+
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: data,
+            });
+
+            if (response.ok) {
+                alert(
+                    `\nThank you for subscribing!\n\nPlease check your email to confirm the subscription.`
+                );
+            } else {
+                alert(`\nThere was an error subscribing. Please try again later.`);
+            }
         });
 
         const categoriesToItems = [{
