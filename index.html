@@ -377,6 +377,18 @@
         .fab.fa-patreon.help-wanted-icon {
             color: #F96854;
         }
+
+        .mobile-subscribe-container {
+            display: none;
+            text-align: center;
+            padding-bottom: 8rem;
+        }
+
+        @media screen and (max-width: 768px) {
+            .mobile-subscribe-container {
+                display: block;
+            }
+        }
     </style>
     <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -409,6 +421,15 @@
 
         <div class="container">
         </div>
+        <div class="mobile-subscribe-container">
+            <form action="" method="post" id="mobile-subscribe-form">
+                <p>Subscribe to the AI Newsletter<br> to never miss a piece!</p>
+                <input class="subscribe-input" type="email" name="email" placeholder="you@example.com"></input>
+                <input type="hidden" name="tag" value="stateofartai" />
+                <input class="subscribe-button" type="submit" value="Subscribe"></input>
+            </form>
+        </div>
+
     </div>
     <div class="modal" id="about-modal">
         <div class="modal-content">
@@ -466,9 +487,8 @@
     </div>
 
     <script>
-        const form = document.getElementById("subscribe-form");
 
-        form.addEventListener("submit", async (event) => {
+        const handleFormSubmit = async (event) => {
             event.preventDefault();
             const email = event.target.email.value;
             const tag = event.target.tag.value;
@@ -491,11 +511,17 @@
             if (response.ok) {
                 alert(
                     `\nThank you for subscribing!\n\nPlease check your email to confirm the subscription.`
-                );
-            } else {
+                    );
+                } else {
                 alert(`\nThere was an error subscribing. Please try again later.`);
             }
-        });
+        }
+
+        const form = document.getElementById("subscribe-form");
+        form.addEventListener("submit", handleFormSubmit);
+
+        const mobileForm = document.getElementById("mobile-subscribe-form");
+        mobileForm.addEventListener("submit", handleFormSubmit);
 
         const categoriesToItems = [{
                 title: "💬 Large Language Models",
