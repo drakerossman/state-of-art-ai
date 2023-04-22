@@ -16,6 +16,25 @@
             padding: 0;
         }
 
+        .top-dropdown {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 10;
+        }
+
+        body {
+            padding-top: 2.8rem;
+        }
+
+        @media (max-width: 767px) {
+            .top-dropdown {
+                width: 100%;
+            }
+        }
+
         .main {
             padding-left: 300px;
         }
@@ -101,11 +120,39 @@
             z-index: 1000;
         }
 
+
+        .header-dropdown {
+            display: none;
+            background-color: #40444b;
+            color: #ffffff;
+            border: 1px solid #ffffff;
+            padding: 15px;
+            font-size: 18px;
+            border-radius: 3px;
+        }
+
+        @media screen and (max-width: 768px) {
+            .header-dropdown {
+                display: inline-block;
+            }
+        }
+
+        .header-dropdown {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 12px 12px;
+        }
+
         .header-content {
             display: flex;
             align-items: center;
             justify-content: flex-start;
             margin-left: 20px;
+            flex-wrap: wrap;
         }
 
         .header-button {
@@ -356,6 +403,7 @@
                 <h1 class="header-title">State of Art AI 🧩</h1>
                 <button class="header-button" id="about-button">About</button>
                 <button class="header-button" id="help-wanted-button">Help wanted!</button>
+                <select id="category-dropdown" class="header-dropdown top-dropdown"></select>
             </div>
         </header>
 
@@ -620,6 +668,21 @@
 
         document.addEventListener("DOMContentLoaded", () => {
 
+            const populateDropdown = () => {
+                const dropdown = document.getElementById("category-dropdown");
+                categoriesToItems.forEach(category => {
+                    const option = document.createElement("option");
+                    option.value = category.link.slice(1);
+                    option.textContent = category.title;
+                    console.log(option.innerHTML)
+                    option.innerHTML = twemoji.parse(option.innerHTML);
+                    console.log(option.innerHTML)
+                    dropdown.appendChild(option);
+                    console.log(dropdown)
+
+                });
+            };
+
             const populateSidebar = () => {
                 const sidebarList = document.querySelector(".sidebar-list");
                 categoriesToItems.forEach(category => {
@@ -695,9 +758,20 @@
 
             const init = () => {
                 populateSidebar();
+                populateDropdown();
                 populateBoxes();
                 animateBoxes();
+
                 window.addEventListener("scroll", animateBoxes);
+
+                const dropdown = document.getElementById("category-dropdown");
+
+                dropdown.addEventListener("change", (event) => {
+                    const categoryId = event.target.value;
+                    if (categoryId) {
+                        showCategory(categoryId);
+                    }
+                });
 
                 document.querySelectorAll(".sidebar-list a").forEach(link => {
                     link.addEventListener("click", event => {
